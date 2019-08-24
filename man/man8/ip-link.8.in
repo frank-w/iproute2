@@ -152,6 +152,9 @@ ip-link \- network device configuration
 .br
 .RB "[ " nomaster " ]"
 .br
+.RB "[ " link
+.IR DEVICE " ]"
+.br
 .RB "[ " vrf
 .IR NAME " ]"
 .br
@@ -2240,6 +2243,10 @@ set master device of the device (enslave device).
 .TP
 .BI nomaster
 unset master device of the device (release device).
+
+.TP
+.BI link " DEVICE"
+set device to which this device is linked to.
 
 .TP
 .BI addrgenmode " eui64|none|stable_secret|random"

@@ -579,7 +579,6 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
 {
 	char *name = NULL;
 	char *dev = NULL;
-	char *link = NULL;
 	int ret, len;
 	char abuf[32];
 	int qlen = -1;
@@ -590,6 +589,7 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
 	int numrxqueues = -1;
 	int link_netnsid = -1;
 	int index = 0;
+	int link = -1;
 	int group = -1;
 	int addr_len = 0;
 	int err;
@@ -621,7 +621,10 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
 				invarg("Invalid \"index\" value", *argv);
 		} else if (matches(*argv, "link") == 0) {
 			NEXT_ARG();
-			link = *argv;
+			link = ll_name_to_index(*argv);
+			if (!link)
+				return nodev(*argv);
+			addattr32(&req->n, sizeof(*req), IFLA_LINK, link);
 		} else if (matches(*argv, "address") == 0) {
 			NEXT_ARG();
 			addr_len = ll_addr_a2n(abuf, sizeof(abuf), *argv);
@@ -1019,15 +1022,6 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
 			fprintf(stderr,
 				"both \"name\" and \"dev\" cannot be used when creating devices.\n");
 			exit(-1);
-		}
-
-		if (link) {
-			int ifindex;
-
-			ifindex = ll_name_to_index(link);
-			if (!ifindex)
-				return nodev(link);
-			addattr32(&req->n, sizeof(*req), IFLA_LINK, ifindex);
 		}
 
 		req->i.ifi_index = index;
