@@ -12,5 +12,7 @@ make -j8 CC="${CROSS_COMPILE}gcc" LD="${CROSS_COMPILE}-ld" HOSTCC=gcc
 file ip/ip
 
 PRFX=$(pwd)/output_$ARCH
-mkdir $PRFX
+mkdir -p $PRFX
+rm -r $PRFX/*
 make PREFIX=$PRFX SBINDIR=$PRFX/sbin ARPDDIR=$PRFX/var/lib/arpd CONFDIR=$PRFX/etc/iproute2 install
+tar -czf iproute2_$ARCH.tar.gz -C output_$ARCH .
